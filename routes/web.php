@@ -12,5 +12,10 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    //return view('welcome');
+	return redirect('https://javierlopez.eu');
 });
+
+Route::get('{any}', function() {
+   return redirect('https://javierlopez.eu');
+})->where('any', '.*');

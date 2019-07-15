@@ -2,9 +2,9 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Http\Request;
 use App\User;
 use Carbon\Carbon;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
 class AuthController extends Controller
@@ -16,17 +16,40 @@ class AuthController extends Controller
             'email'    => 'required|string|email|unique:users',
             'password' => 'required|string|confirmed',
         ]);
-        $user = new User([
-            'name'     => $request->name,
-            'email'    => $request->email,
-            'password' => bcrypt($request->password),
-        ]);
-        $user->save();
-        return response()->json([
-            'message' => 'Successfully created user!'], 201);
+        try{
+            $user = new User([
+                'name'     => $request->name,
+                'email'    => $request->email,
+                'password' => bcrypt($request->password),
+            ]);
+            $user->save(); // returns false
+            /*return response()->json([
+                'message' => 'Successfully created user!'], 201);
+            */
+            if($user->save()){
+                return response()->json([
+                    'message' => 'Success created user!'], 201);
+            }else{
+                return response()->json([
+                    'message' => 'Error creating user!'], 409);
+            }
+        }
+        catch(\Exception $e){
+            // do task when error
+            //echo $e->getMessage();   // insert query
+            return response()->json([
+                'message' => 'Error creating user!'], 409);
+        }
+
     }
     public function login(Request $request)
     {
+        /*$request = (object) array(
+            'email'     => 'prueba@email.com',
+            'password'    => '123456789',
+            'remember_me' => true
+        );*/
+
         $request->validate([
             'email'       => 'required|string|email',
             'password'    => 'required|string',
